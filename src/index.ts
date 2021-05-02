@@ -3,9 +3,15 @@ import chalk from 'chalk'
 import clear from 'clear'
 import figlet from 'figlet'
 import ReadLine from 'readline'
-import { organizationsSearchMapsMap, fullDataByOrganizationsIdMap } from './utils/create-organizations-search-maps'
-import { ticketsSearchMapsMap, fullDataByTicketsIdMap } from './utils/create-tickets-search-maps'
-import { usersSearchMapsMap, fullDataByUsersIdMap } from './utils/create-users-search-maps'
+import { createOrganizationSearchMaps } from './utils/create-organizations-search-maps'
+import { createTicketsSearchMaps } from './utils/create-tickets-search-maps'
+import { createUsersSearchMaps } from './utils/create-users-search-maps'
+
+const { organizationsSearchMapsMap, fullDataByOrganizationsIdMap } = createOrganizationSearchMaps()
+
+const { ticketsSearchMapsMap, fullDataByTicketsIdMap, fullTicketsDataByOrganizationIdMap } = createTicketsSearchMaps()
+
+const { usersSearchMapsMap, fullDataByUsersIdMap, fullUsersDataByOrganizationIdMap } = createUsersSearchMaps()
 
 const rl = ReadLine.createInterface({
   input: process.stdin,
@@ -58,7 +64,7 @@ const parseTicketsSearchValue = ({ searchField, searchValue }) => {
     case 'assignee_id':
       return parseInt(searchValue)
     case 'organization_id':
-        return parseInt(searchValue)
+      return parseInt(searchValue)
     case 'has_incidents':
       return searchValue === 'true' ? true : searchValue === 'false' ? false : searchValue
     default:
@@ -75,8 +81,21 @@ const searchUsers = () => {
         if (searchMap?.has(searchValue)) {
           const idResults = searchMap.get(searchValue)
           //print all found results
-          idResults.forEach((id: number) => {
+          console.log('Results: \n')
+          idResults?.forEach((id: number) => {
+            console.log('User: \n')
             console.log(fullDataByUsersIdMap?.get(id))
+
+            const orgId = fullDataByUsersIdMap?.get(id)?.organization_id
+            if (orgId !== undefined) {
+              // find all tickets with the linked organization_id
+              console.log('Linked tickets: \n')
+              console.log(fullTicketsDataByOrganizationIdMap?.get(orgId))
+
+              //find the organization by linked organization_id
+              console.log('Linked organization: \n')
+              console.log(fullDataByOrganizationsIdMap?.get(orgId))
+            }
           })
         } else {
           console.log('no results found')
@@ -98,8 +117,21 @@ const searchTickets = () => {
         if (searchMap?.has(searchValue)) {
           const idResults = searchMap.get(searchValue)
           //print all found results
-          idResults.forEach((id: string) => {
+          console.log('Results: \n')
+          idResults?.forEach((id: string) => {
+            console.log('Ticket: \n')
             console.log(fullDataByTicketsIdMap?.get(id))
+
+            const orgId = fullDataByTicketsIdMap?.get(id)?.organization_id
+            if (orgId !== undefined) {
+              // find all users with the linked organization_id
+              console.log('Linked users: \n')
+              console.log(fullUsersDataByOrganizationIdMap?.get(orgId))
+
+              //find the organization by linked organization_id
+              console.log('Linked organization: \n')
+              console.log(fullDataByOrganizationsIdMap?.get(orgId))
+            }
           })
         } else {
           console.log('no results found')
@@ -121,8 +153,18 @@ const searchOrganizations = () => {
         if (searchMap?.has(searchValue)) {
           const idResults = searchMap.get(searchValue)
           //print all found results
-          idResults.forEach((id: number) => {
+          console.log('Results: \n')
+          idResults?.forEach((id: number) => {
+            console.log('Organization: \n')
             console.log(fullDataByOrganizationsIdMap?.get(id))
+            // find all users with the linked organization_id
+
+            console.log('Linked users: \n')
+            console.log(fullUsersDataByOrganizationIdMap?.get(id))
+
+            //find all tickets with the linked organization_id
+            console.log('Linked tickets: \n')
+            console.log(fullTicketsDataByOrganizationIdMap?.get(id))
           })
         } else {
           console.log('no results found')
@@ -134,6 +176,7 @@ const searchOrganizations = () => {
     }
   })
 }
+
 const processCommand = (input: string) => {
   if (input === '0') {
     rl.question('Select 1) Users 2) Tickets 3) Organizations', searchType => {
