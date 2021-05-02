@@ -2,8 +2,8 @@
 import chalk from 'chalk'
 import clear from 'clear'
 import figlet from 'figlet'
-import ReadLine from 'readline' 
-import { searchMapsMap } from './utils/create-organization-search-dictionaries'
+import ReadLine from 'readline'
+import { searchMapsMap, fullDataByOrgIdMap } from './utils/create-organization-search-dictionaries'
 
 const rl = ReadLine.createInterface({
   input: process.stdin,
@@ -15,14 +15,20 @@ console.log(chalk.red(figlet.textSync('Search', { horizontalLayout: 'full' })))
 
 console.log('for starting search press 0')
 
-const file_map = {
-  1: 'organization',
-  2: 'users',
-  3: 'tickets',
-}
 
 const startSearchCommand = (fileName: string) => {
   console.log('Type the name of the field you wish to search on')
+}
+
+const parseOrganizationSearchValue = ({ searchField, searchValue }) => {
+  switch (searchField) {
+    case '_id':
+      return parseInt(searchValue)
+    case 'shared_tickets':
+      return searchValue === 'true' ? true : searchValue === 'false' ? false : searchValue
+    default:
+      return searchValue
+  }
 }
 
 const searchUsers = () => console.log('tbi')
@@ -31,31 +37,18 @@ const searchTickets = () => console.log('tbi')
 
 const searchOrganizations = () => {
   rl.question('which field do you wish to search on', searchField => {
-    if(searchMapsMap.has(searchField)) {
+    if (searchMapsMap.has(searchField)) {
       rl.question('type the value you wish to search on', searchValue => {
-        let searchMap = searchMapsMap.get(searchField)
-        if (searchField === '_id') {
-          const intValue = parseInt(searchValue)
-          if(searchMap?.has(intValue)){
-            console.log(searchMap.get(intValue))
-          } else {
-            console.log('no results found')
-          }
+        const searchMap = searchMapsMap.get(searchField)
+        searchValue = parseOrganizationSearchValue({ searchField, searchValue })
+        if (searchMap?.has(searchValue)) {
+          const idResults = searchMap.get(searchValue)
+          //print all found results
+          idResults.forEach((id: number) => {
+            console.log(fullDataByOrgIdMap?.get(id))
+          })
         } else {
-          let parsedSearchValue: string | boolean =  searchValue
-          if(searchField === 'shared_tickets') {
-            parsedSearchValue = searchValue === 'true' ? true : searchValue === 'false' ? false : searchValue
-          }
-          if(searchMap?.has(parsedSearchValue)){
-            const orgIdSearchMap = searchMapsMap.get('_id')
-            const res = searchMap.get(parsedSearchValue)
-              //print all found results
-              res.forEach((result: number) => {
-                console.log(orgIdSearchMap?.get(result))
-              })
-          } else {
-            console.log('no results found')
-          }
+          console.log('no results found')
         }
       })
     } else {
