@@ -3,19 +3,19 @@ const organizations: [IOrganization] = require('../data/organizations.json')
 
 const organizationFields = Object.keys(organizations[0])
 
-const searchMapsMap = new Map<string, Map<string | number | boolean, any>>()
+const organizationsSearchMapsMap = new Map<string, Map<string | number | boolean, any>>()
 
-const fullDataByOrgIdMap = new Map<number, Object>()
+const fullDataByOrganizationsIdMap = new Map<number, Object>()
 
-organizationFields.forEach(key => searchMapsMap.set(key, new Map<string | number | boolean, [number]>()))
+organizationFields.forEach(key => organizationsSearchMapsMap.set(key, new Map<string | number | boolean, [number]>()))
 
 organizations.forEach(organization => {
   Object.keys(organization).forEach(key => {
     //will fill in each map
     if (key === '_id') {
-      fullDataByOrgIdMap?.set(organization._id, organization)
+      fullDataByOrganizationsIdMap?.set(organization._id, organization)
     }
-    let searchByKeyMap = searchMapsMap.get(key)
+    let searchByKeyMap = organizationsSearchMapsMap.get(key)
     if (searchByKeyMap?.has(organization[key])) {
       let existingValuesArray = searchByKeyMap.get(organization[key])
       searchByKeyMap.set(organization[key], [...existingValuesArray, organization._id])
@@ -25,4 +25,4 @@ organizations.forEach(organization => {
   })
 })
 
-export { searchMapsMap, fullDataByOrgIdMap }
+export { organizationsSearchMapsMap, fullDataByOrganizationsIdMap }

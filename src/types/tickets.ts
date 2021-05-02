@@ -1,5 +1,5 @@
 export interface ITickets {
-    _id: number; 
+    _id: string; 
     url: string; 
     external_id: string;
     created_at: string;

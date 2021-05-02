@@ -14,7 +14,7 @@ export interface IUser {
     email: string;
     phone: string;
     signature: string;
-    organization_id: string;
+    organization_id: number;
     tags: [string];
     suspended: boolean;
     role: string;
