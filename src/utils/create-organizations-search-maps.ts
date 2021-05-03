@@ -11,11 +11,9 @@ const createOrganizationSearchMaps = () => {
 
   organizationFields.forEach(key => organizationsSearchMapsMap.set(key, new Map<string | number | boolean, number[]>()))
 
-  const createMapsWithExistingValues = ({searchByKeyMap, mapKey, value}) => {
-    const existingValuesArray: number[] | undefined = searchByKeyMap?.get(mapKey)
-    existingValuesArray !== undefined
-      ? searchByKeyMap?.set(mapKey, [...existingValuesArray, value])
-      : searchByKeyMap?.set(mapKey, [value])
+  const createMapsWithExistingValues = ({ map, mapKey, value }) => {
+    const existingValuesArray: number[] | undefined = map?.get(mapKey)
+    existingValuesArray !== undefined ? map?.set(mapKey, [...existingValuesArray, value]) : map?.set(mapKey, [value])
   }
 
   organizations.forEach(organization => {
@@ -26,13 +24,13 @@ const createOrganizationSearchMaps = () => {
       // create organization search fields to ids lookup map
       const searchByKeyMap = organizationsSearchMapsMap.get(key)
       //handles flatting the fields that are of type array, i.e tags
-      const mapKey= organization[key]
+      const mapKey = organization[key]
       if (Array.isArray(mapKey)) {
         mapKey.forEach(key => {
-          createMapsWithExistingValues({searchByKeyMap, mapKey: key, value: organization._id})
+          createMapsWithExistingValues({ map: searchByKeyMap, mapKey: key, value: organization._id })
         })
       } else {
-        createMapsWithExistingValues({searchByKeyMap, mapKey, value: organization._id})
+        createMapsWithExistingValues({ map: searchByKeyMap, mapKey, value: organization._id })
       }
     })
   })

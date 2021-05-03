@@ -12,6 +12,11 @@ const createUsersSearchMaps = () => {
 
   userFields.forEach(key => usersSearchMapsMap.set(key, new Map<string | number | boolean, number[]>()))
 
+  const createMapsWithExistingValues = ({ map, mapKey, value }) => {
+    const existingValuesArray: number[] | undefined = map?.get(mapKey)
+    existingValuesArray !== undefined ? map?.set(mapKey, [...existingValuesArray, value]) : map?.set(mapKey, [value])
+  }
+
   users.forEach(user => {
     Object.keys(user).forEach(key => {
       // create user by id lookup map
@@ -19,18 +24,24 @@ const createUsersSearchMaps = () => {
 
       // create users by organization_id lookup map
       if (key === 'organization_id') {
-        const existingUsersArray: IUser[] | undefined = fullUsersDataByOrganizationIdMap.get(user.organization_id)
-        existingUsersArray !== undefined
-          ? fullUsersDataByOrganizationIdMap.set(user.organization_id, [...existingUsersArray, user])
-          : fullUsersDataByOrganizationIdMap?.set(user.organization_id, [user])
+        createMapsWithExistingValues({
+          map: fullUsersDataByOrganizationIdMap,
+          mapKey: user.organization_id,
+          value: user,
+        })
       }
 
       // create user search fields to ids lookup map
       const searchByKeyMap = usersSearchMapsMap.get(key)
-      const existingValuesArray: number[] | undefined = searchByKeyMap?.get(user[key])
-      existingValuesArray !== undefined
-        ? searchByKeyMap?.set(user[key], [...existingValuesArray, user._id])
-        : searchByKeyMap?.set(user[key], [user._id])
+      //handles flatting the fields that are of type array, i.e tags
+      const mapKey = user[key]
+      if (Array.isArray(mapKey)) {
+        mapKey.forEach(key => {
+          createMapsWithExistingValues({ map: searchByKeyMap, mapKey: key, value: user._id })
+        })
+      } else {
+        createMapsWithExistingValues({ map: searchByKeyMap, mapKey, value: user._id })
+      }
     })
   })
 

@@ -12,6 +12,11 @@ const createTicketsSearchMaps = () => {
 
   ticketFields.forEach(key => ticketsSearchMapsMap.set(key, new Map<string | number | boolean, string[]>()))
 
+  const createMapsWithExistingValues = ({ map, mapKey, value }) => {
+    const existingValuesArray: number[] | undefined = map?.get(mapKey)
+    existingValuesArray !== undefined ? map?.set(mapKey, [...existingValuesArray, value]) : map?.set(mapKey, [value])
+  }
+
   tickets.forEach(ticket => {
     Object.keys(ticket).forEach(key => {
       // create ticket by id lookup map
@@ -19,20 +24,24 @@ const createTicketsSearchMaps = () => {
 
       // create tickets by organization_id lookup map
       if (key === 'organization_id') {
-        const existingTicketsArray: ITickets[] | undefined = fullTicketsDataByOrganizationIdMap.get(
-          ticket.organization_id
-        )
-        existingTicketsArray !== undefined
-          ? fullTicketsDataByOrganizationIdMap.set(ticket.organization_id, [...existingTicketsArray, ticket])
-          : fullTicketsDataByOrganizationIdMap?.set(ticket.organization_id, [ticket])
+        createMapsWithExistingValues({
+          map: fullTicketsDataByOrganizationIdMap,
+          mapKey: ticket.organization_id,
+          value: ticket,
+        })
       }
 
       // create ticket search fields to ids lookup map
       const searchByKeyMap = ticketsSearchMapsMap.get(key)
-      const existingValuesArray: string[] | undefined = searchByKeyMap?.get(ticket[key])
-      existingValuesArray !== undefined
-        ? searchByKeyMap?.set(ticket[key], [...existingValuesArray, ticket._id])
-        : searchByKeyMap?.set(ticket[key], [ticket._id])
+      //handles flatting the fields that are of type array, i.e tags
+      const mapKey = ticket[key]
+      if (Array.isArray(mapKey)) {
+        mapKey.forEach(key => {
+          createMapsWithExistingValues({ map: searchByKeyMap, mapKey: key, value: ticket._id })
+        })
+      } else {
+        createMapsWithExistingValues({ map: searchByKeyMap, mapKey, value: ticket._id })
+      }
     })
   })
 
