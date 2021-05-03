@@ -1,3 +1,4 @@
+import { type } from 'os'
 import { IOrganization } from '../types'
 const organizations: [IOrganization] = require('../data/organizations.json')
 
@@ -10,6 +11,13 @@ const createOrganizationSearchMaps = () => {
 
   organizationFields.forEach(key => organizationsSearchMapsMap.set(key, new Map<string | number | boolean, number[]>()))
 
+  const createMapsWithExistingValues = ({searchByKeyMap, mapKey, value}) => {
+    const existingValuesArray: number[] | undefined = searchByKeyMap?.get(mapKey)
+    existingValuesArray !== undefined
+      ? searchByKeyMap?.set(mapKey, [...existingValuesArray, value])
+      : searchByKeyMap?.set(mapKey, [value])
+  }
+
   organizations.forEach(organization => {
     Object.keys(organization).forEach(key => {
       // create organization by id lookup map
@@ -17,10 +25,15 @@ const createOrganizationSearchMaps = () => {
 
       // create organization search fields to ids lookup map
       const searchByKeyMap = organizationsSearchMapsMap.get(key)
-      const existingValuesArray: number[] | undefined = searchByKeyMap?.get(organization[key])
-      existingValuesArray !== undefined
-        ? searchByKeyMap?.set(organization[key], [...existingValuesArray, organization._id])
-        : searchByKeyMap?.set(organization[key], [organization._id])
+      //handles flatting the fields that are of type array, i.e tags
+      const mapKey= organization[key]
+      if (Array.isArray(mapKey)) {
+        mapKey.forEach(key => {
+          createMapsWithExistingValues({searchByKeyMap, mapKey: key, value: organization._id})
+        })
+      } else {
+        createMapsWithExistingValues({searchByKeyMap, mapKey, value: organization._id})
+      }
     })
   })
 

@@ -2,11 +2,19 @@
   {
     "_id": 101,
     "url": "http://initech.zendesk.com/api/v2/organizations/101.json",
-    "shared_tickets": false
+    "shared_tickets": false, 
+    "tags": [
+      "Fulton",
+      "West"
+    ]
   },
   {
     "_id": 106,
     "url": "http://initech.zendesk.com/api/v2/organizations/106.json",
-    "shared_tickets": false
+    "shared_tickets": false,
+    "tags": [
+      "Nolan",
+      "Rivas"
+    ]
   }
 ]
