@@ -54,8 +54,32 @@ describe('#createUsersSearchMaps', () => {
       ],
     ])
 
-    const { usersSearchMapsMap, fullDataByUsersIdMap } = createUsersSearchMaps()
+    const expectedFullUsersDataByOrganizationIdMap = new Map([
+      [
+        119,
+        [{
+          '_id': 1,
+          'name': 'Francisca Rasmussen',
+          'organization_id': 119,
+          'active': true,
+          'tags': ['Springville', 'Sutton'],
+        }],
+      ],
+      [
+        106,
+        [{
+          '_id': 2,
+          'name': 'Cross Barlow',
+          'organization_id': 106,
+          'active': true,
+          'tags': ['Foxworth', 'Woodlands'],
+        }],
+      ],
+    ])
+
+    const { usersSearchMapsMap, fullDataByUsersIdMap, fullUsersDataByOrganizationIdMap } = createUsersSearchMaps()
     expect(usersSearchMapsMap).toEqual(expectedUsersSearchMapsMap)
     expect(fullDataByUsersIdMap).toEqual(expectedFullDataByUsersIdMap)
+    expect(fullUsersDataByOrganizationIdMap).toEqual(expectedFullUsersDataByOrganizationIdMap)
   })
 })

@@ -13,7 +13,7 @@
     "build": "tsc -p .",
     "bootstrap": "sudo npm i -g && search",
     "refresh": "rm -rf ./node_modules ./package-lock.json && npm install",
-    "test": "jest --verbose --detectOpenHandles --colors --coverage --watch"
+    "test": "jest --verbose --detectOpenHandles --colors --coverage"
   },
   "dependencies": {
     "@types/jest": "^25.1.4",

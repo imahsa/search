@@ -52,8 +52,30 @@ describe('#createTicketsSearchMaps', () => {
       ],
     ])
 
-    const { ticketsSearchMapsMap, fullDataByTicketsIdMap } = createTicketsSearchMaps()
+    const expectedFullTicketsDataByOrganizationIdMap = new Map([
+      [
+        116,
+        [{
+          '_id': '436bf9b0-1147-4c0a-8439-6f79833bff5b',
+          'organization_id': 116,
+          'has_incidents': false,
+          'tags': ['Ohio', 'Pennsylvania'],
+        }],
+      ],
+      [
+        106,
+        [{
+          '_id': 'b2035bdc-2ff4-4d23-9752-c5b67541193e',
+          'organization_id': 106,
+          'has_incidents': true,
+          'tags': ['Connecticut', 'Arkansas'],
+        }],
+      ],
+    ])
+
+    const { ticketsSearchMapsMap, fullDataByTicketsIdMap, fullTicketsDataByOrganizationIdMap } = createTicketsSearchMaps()
     expect(ticketsSearchMapsMap).toEqual(expectedTicketsSearchMapsMap)
     expect(fullDataByTicketsIdMap).toEqual(expectedFullDataByTicketsIdMap)
+    expect(fullTicketsDataByOrganizationIdMap).toEqual(expectedFullTicketsDataByOrganizationIdMap)
   })
 })
