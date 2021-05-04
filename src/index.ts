@@ -23,10 +23,6 @@ console.log(chalk.red(figlet.textSync('Search', { horizontalLayout: 'full' })))
 
 console.log('for starting search press 0')
 
-const startSearchCommand = (fileName: string) => {
-  console.log('Type the name of the field you wish to search on')
-}
-
 const parseOrganizationsSearchValue = ({ searchField, searchValue }) => {
   switch (searchField) {
     case '_id':
@@ -73,9 +69,9 @@ const parseTicketsSearchValue = ({ searchField, searchValue }) => {
 }
 
 const searchUsers = () => {
-  rl.question('which field do you wish to search on', searchField => {
+  rl.question('which field do you wish to search on ', searchField => {
     if (usersSearchMapsMap.has(searchField)) {
-      rl.question('type the value you wish to search on', searchValue => {
+      rl.question('type the value you wish to search on ', searchValue => {
         const searchMap = usersSearchMapsMap.get(searchField)
         searchValue = parseUsersSearchValue({ searchField, searchValue })
         if (searchMap?.has(searchValue)) {
@@ -109,9 +105,9 @@ const searchUsers = () => {
 }
 
 const searchTickets = () => {
-  rl.question('which field do you wish to search on', searchField => {
+  rl.question('which field do you wish to search on ', searchField => {
     if (ticketsSearchMapsMap.has(searchField)) {
-      rl.question('type the value you wish to search on', searchValue => {
+      rl.question('type the value you wish to search on ', searchValue => {
         const searchMap = ticketsSearchMapsMap.get(searchField)
         searchValue = parseTicketsSearchValue({ searchField, searchValue })
         if (searchMap?.has(searchValue)) {
@@ -145,9 +141,9 @@ const searchTickets = () => {
 }
 
 const searchOrganizations = () => {
-  rl.question('which field do you wish to search on', searchField => {
+  rl.question('which field do you wish to search on ', searchField => {
     if (organizationsSearchMapsMap.has(searchField)) {
-      rl.question('type the value you wish to search on', searchValue => {
+      rl.question('type the value you wish to search on ', searchValue => {
         const searchMap = organizationsSearchMapsMap.get(searchField)
         searchValue = parseOrganizationsSearchValue({ searchField, searchValue })
         if (searchMap?.has(searchValue)) {
@@ -179,7 +175,7 @@ const searchOrganizations = () => {
 
 const processCommand = (input: string) => {
   if (input === '0') {
-    rl.question('Select 1) Users 2) Tickets 3) Organizations', searchType => {
+    rl.question('Select 1) Users 2) Tickets 3) Organizations ', searchType => {
       if (searchType === '1') searchUsers()
       if (searchType === '2') searchTickets()
       if (searchType === '3') searchOrganizations()

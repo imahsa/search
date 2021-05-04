@@ -38,6 +38,9 @@ search
 npm run test
 ```
 
+## How to do the search 
+The app prompt you with the input option. After one search was done, users can input 0 again to start a new search. 
+
 ## Solutions and Tradeoffs
 
 For this solution performance was prioritized. The data will be preprocessed to multiple maps and map of maps, to allow O(1) lookup time regardless of the data size. Note the initial preprocessing will be O(n), but after that the search lookup itself is constant time. 
